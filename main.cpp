@@ -1,255 +1,325 @@
 #include <iostream>
+
 #include <fstream>
-#include<map>
-#include<vector>
+
+#include <string>
+
 using namespace std;
 
-/*
-struct Zesp{
-    double value_re;
-    double value_im;
-};
-*/
-class Zesp{
-public:
-    map<string,double> LiczbaZespolona;
-};
-class IWektor_Zesp{
-public:
-    virtual int Dlugosc() = 0;
-    virtual void Ustaw(string c, double value, int i) = 0;
-    virtual double Pobierz(string c, int i) = 0;
-    virtual ~IWektor_Zesp(){
-        //wirtualny destruktor
-    }
-};
-class Wektor_Zesp: public IWektor_Zesp{
+
+
+class Character {
+
+private:
+
+    string Name;
+
+    string Type;
+   
 protected:
-    vector<Zesp> wektor;
-    int size;
+    
+    Character(string NameA, string TypeA) {
+
+        Name = NameA;
+
+        Type = TypeA;
+
+    }
+
 public:
-    Wektor_Zesp(){
-        size = 0;
-    }
-    Wektor_Zesp(int sizeW){
-        if(sizeW < 0 || sizeW > 100){
-            throw out_of_range("Rozmiar wychodzi poza zakres!");
-        }
-        else{
-            size = sizeW;
-        }
-    }
-    int Dlugosc(){
-        return size;
-    }
-    void Ustaw(string c, double value, int i){
-        if(c == "re"){
-            wektor.push_back(Zesp());
-            //wektor[i].value_re = value;
-            wektor[i].LiczbaZespolona["re"] = value;
-        }
-        else{
-            //wektor[i].value_im = value;
-            wektor[i].LiczbaZespolona["im"] = value;
-        }
-    }
-    double Pobierz(string c, int i){
-        if(c == "re"){
-            //return wektor[i].value_re;
-            return wektor[i].LiczbaZespolona["re"];
-        }
-        else{
-            //return wektor[i].value_im;
-            return wektor[i].LiczbaZespolona["im"];
-        }
+
+    string GetType() {
+
+        return Type;
+
     }
 
-    Wektor_Zesp operator+(Wektor_Zesp &obj){
-        Wektor_Zesp wynik;
-        if(size != obj.size){
-            throw exception();
-        }
-        else{
-            wynik.size = obj.size;
-            for(int i = 0; i < obj.size; i++){
-                wynik.wektor.push_back(Zesp());
-                //wynik.wektor[i].value_re = wektor[i].value_re + obj.wektor[i].value_re;
-                //wynik.wektor[i].value_im = wektor[i].value_im + obj.wektor[i].value_im;
-                wynik.wektor[i].LiczbaZespolona["re"] = wektor[i].LiczbaZespolona["re"] + obj.wektor[i].LiczbaZespolona["re"];
-                wynik.wektor[i].LiczbaZespolona["im"] = wektor[i].LiczbaZespolona["im"] + obj.wektor[i].LiczbaZespolona["im"];
-            }
-        }
-        return wynik;
-    }
-    Wektor_Zesp operator-(Wektor_Zesp &obj){
-        Wektor_Zesp wynik;
-        if(size != obj.size){
-            throw exception();
-        }
-        else{
-            wynik.size = obj.size;
-            for(int i = 0; i < obj.size; i++){
-                wynik.wektor.push_back(Zesp());
-                //wynik.wektor[i].value_re = wektor[i].value_re - obj.wektor[i].value_re;
-                //wynik.wektor[i].value_im = wektor[i].value_im - obj.wektor[i].value_im;
-                wynik.wektor[i].LiczbaZespolona["re"] = wektor[i].LiczbaZespolona["re"] - obj.wektor[i].LiczbaZespolona["re"];
-                wynik.wektor[i].LiczbaZespolona["im"] = wektor[i].LiczbaZespolona["im"] - obj.wektor[i].LiczbaZespolona["im"];
-            }
-        }
-        return wynik;
-    }
-    Wektor_Zesp operator*(double liczba){
-        Wektor_Zesp wynik;
+    string GetName() {
 
-        wynik.size = size;
-        for(int i = 0; i < size; i++){
-            wynik.wektor.push_back(Zesp());
-            //wynik.wektor[i].value_re = wektor[i].value_re * liczba;
-            //wynik.wektor[i].value_im = wektor[i].value_im * liczba;
-            wynik.wektor[i].LiczbaZespolona["re"] = wektor[i].LiczbaZespolona["re"] * liczba;
-            wynik.wektor[i].LiczbaZespolona["im"] = wektor[i].LiczbaZespolona["im"] * liczba;
-        }
+        return Name;
 
-        return wynik;
     }
-    Wektor_Zesp operator/(double liczba){
-        Wektor_Zesp wynik;
 
-        if(liczba == 0) throw runtime_error("Nie mozna dzielic przez zero!");
-        wynik.size = size;
-        for(int i = 0; i < size; i++){
-            wynik.wektor.push_back(Zesp());
-            //wynik.wektor[i].value_re = wektor[i].value_re / liczba;
-            //wynik.wektor[i].value_im = wektor[i].value_im / liczba;
-            wynik.wektor[i].LiczbaZespolona["re"] = wektor[i].LiczbaZespolona["re"] / liczba;
-            wynik.wektor[i].LiczbaZespolona["im"] = wektor[i].LiczbaZespolona["im"] / liczba;
-        }
+    virtual void Draw(){
 
-        return wynik;
+        cout << "Type: " << Type;
+
+        cout << ", Name: " << Name;
+
+        cout << ", ";
+
     }
+
 };
-class WektorIO: public Wektor_Zesp{
+
+
+
+class Warrior : public Character {
+
+private:
+
+    double ArmorLevel;
+
 public:
-    WektorIO(const Wektor_Zesp &obj): Wektor_Zesp(obj){}
-    void Wczytaj(){
-        double val = 0;
-            for(int i = 0; i < size; i++){
-                cout << "Podaj wartosc rzeczywista: ";
-                cin >> val;
-                Ustaw("re", val, i);
-                cout << "Podaj wartosc urojona: ";
-                cin >> val;
-                Ustaw("im", val, i);
-            }
-    }
-    void Wyswietl(){
-        for(int i = 0; i < size; i++){
-            if(Pobierz("im", i) < 0){
-                cout << Pobierz("re", i) << " - i" << -Pobierz("im", i) << endl;
-            }
-            else{
-                cout << Pobierz("re", i) << " + i" << Pobierz("im", i) << endl;
-            }
+
+    Warrior(string nazwa, double Armor) : Character(nazwa, "Warrior") {
+
+        if (nazwa.length() > 128 || Armor < 0) {
+
+            throw out_of_range("Jedna ze zmiennych wychodzi poza zakres!");
+
         }
+
+        ArmorLevel = Armor;
+
     }
-    void Wczytaj_z_pliku(string nazwa){
-        double val = 0;
+
+    Warrior& SetArmorLevel(double armor) {
+
+        this->ArmorLevel = armor;
+
+        return *this;
+
+    }
+
+    double GetArmorLevel() {
+
+        return ArmorLevel;
+
+    }
+
+    virtual void Draw() {
+
+        Character::Draw();
+
+        cout << "ArmorLevel: " << ArmorLevel << endl;
+
+    }
+
+    ~Warrior() {
+
+        //destruktor
+
+    }
+
+};
+
+
+
+class Enemy: public Character {
+
+private:
+
+    double Strenght;
+
+    int ConcurrentWarriors;
+
+public:
+
+    Enemy(string nazwa, double StrenghtA, int ConcurrentWarriorsA) : Character(nazwa, "Enemy") {
+
+        if (nazwa.length() > 128 || StrenghtA < 0 || ConcurrentWarriorsA < 0) {
+
+            throw out_of_range("Jedna ze zmiennych wychodzi poza zakres!");
+
+        }
+
+        Strenght = StrenghtA;
+
+        ConcurrentWarriors = ConcurrentWarriorsA;
+
+    }
+
+    Enemy& SetStrenght(double sila) {
+
+        this->Strenght = sila;
+
+        return *this;
+
+    }
+
+    double GetStrenght() {
+
+        return Strenght;
+
+    }
+
+    int GetConcurrentWarriors() {
+
+        return ConcurrentWarriors;
+
+    }
+
+    virtual void Draw() {
+
+        Character::Draw();
+
+        cout << "Strength: " << Strenght;
+
+        cout << ", ConcurrentWarriors: " << ConcurrentWarriors << endl;
+
+    }
+
+    ~Enemy() {
+
+        //destruktor
+
+    }
+
+};
+
+
+
+int main()
+
+{
+
+    try {
+
+        // TEST KLAS
+
+        const int charactersCount = 6;
+
+        Character* characters[charactersCount] = {};
+
+
+
+        characters[0] = new Warrior("Batman", 10.2);
+
+        characters[1] = new Enemy("Joker", 5.1, 3);
+
+        characters[2] = new Warrior("Superman", 55.3);
+
+        characters[3] = new Enemy("Ultra-Humanite", 17.2, 10);
+
+        characters[4] = new Warrior("Daredevil", 33.7);
+
+        characters[5] = new Enemy("Wilson Fisk", 3.1, 10);
+
+
+
+        for (int i = 0; i < charactersCount; ++i)
+
+        {
+
+            characters[i]->Draw();
+
+        }
+
+
+
+        for (int i = 0; i < charactersCount; ++i) {
+
+            if (characters[i])
+
+                delete characters[i];
+
+        }
+
+
+
+        cout << endl << endl;
+
+        //TEST WCZYTYWANIA Z PLIKU
+
         ifstream plik;
-        plik.open(nazwa);
 
-        if(!plik){
-            cout << "Blad odczytu!" << endl;
+        plik.open("poli_data_characters.txt");
+
+
+
+        if (!plik) {
+
+            cout << "Blad odczytu pliku";
+
             exit(1);
+
         }
 
-        int i = 0;
-        while(!plik.eof()){
-            if(plik.eof()) break;
-            if(i == 0) {
-                plik >> size;
-                i++;
+
+
+        string nazwa, linia;
+
+        double sila, armor;
+
+        int ilosc;
+
+        int k = 0;
+
+        Character* characters2[11] = {};
+
+
+
+        while (!plik.eof()) {
+
+            plik >> linia;
+
+            if (plik.eof()) break;
+
+
+
+            if (linia == "Warrior") {
+
+                plik >> nazwa;
+
+                plik >> armor;
+
+
+
+                characters2[k] = new Warrior(nazwa, armor);
+
+                k++;
+
             }
-            else{
-                for(int j = 0; j < size; j++){
-                    plik >> val;
-                    Ustaw("re", val, j);
-                    plik >> val;
-                    Ustaw("im", val, j);
-                }
+
+            else if (linia == "Enemy") {
+
+                plik >> nazwa;
+
+                plik >> sila;
+
+                plik >> ilosc;
+
+
+
+                characters2[k] = new Enemy(nazwa, sila, ilosc);
+
+                k++;
+
             }
-        }
-        plik.close();
-    }
-    void Zapis_do_pliku(string nazwa){
-        ofstream plik;
-        plik.open(nazwa, ios::app);
 
-        if(!plik){
-            cout << "Blad odczytu!" << endl;
-            exit(1);
         }
 
-        plik << size;
-        plik << '\n';
-        for(int i = 0; i < size; i++){
-            plik << Pobierz("re", i) << endl;
-            plik << Pobierz("im", i) << endl;
+
+
+        for (int i = 0; i < 11; i++)
+
+        {
+
+            characters2[i]->Draw();
+
         }
-        plik << '\n';
-
-        plik.close();
-    }
-};
 
 
-int main() {
-    try{
-        WektorIO z1(3);
-        WektorIO z2(3);
-        WektorIO z3(3);
-        WektorIO z4(3);
-        WektorIO z5(3);
-        WektorIO z6(3);
-        WektorIO z7(3);
 
-        z1.Wczytaj();
-        cout << endl << "z1: " << endl;
-        z1.Wyswietl();
+        for (int i = 0; i < 11; ++i) {
 
-        cout << endl;
-        z2.Wczytaj_z_pliku("zespolona.txt");
-        cout << endl<< "z2: "<< endl;;
-        z2.Wyswietl();
+            if (characters2[i])
 
-        cout << endl;
-        z3 = z1 + z2;
-        cout << endl << "z3: " << endl;
-        z3.Wyswietl();
+                delete characters2[i];
 
-        cout << endl;
-        z4 = z1 - z2;
-        cout << endl << "z4: " << endl;
-        z4.Wyswietl();
-
-        cout << endl;
-        z5 = z4 * 2;
-        cout << endl << "z5: " << endl;
-        z5.Wyswietl();
-
-        cout << endl;
-        z6 = z5 / 5;
-        z6.Zapis_do_pliku("wynik.txt");
+        }
 
     }
-    catch(out_of_range &e){
+
+    catch (out_of_range& e) {
+
         cout << e.what() << endl;
+
     }
-    catch(exception &e){
-        cout << "Rozmiary wektorow sa roznej dlugosc!" << endl;
-    }
-    catch(runtime_error &e){
-        cout << e.what() << endl;
-    }
+
+
 
     return 0;
+
 }
